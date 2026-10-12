@@ -1,0 +1,31 @@
+@startuml
+!include style.iuml
+title sd [Interaction] BolusTuXa [Lệnh bolus bữa ăn từ ứng dụng điện thoại]
+actor "Người bệnh" as PB
+participant "app:\nUngDungDiDong" as APP
+participant "ble:\nGiaoTiepBLE" as BLE
+participant "ctrl:\nBoDieuKhienAID" as CTRL
+participant "ssu:\nBoGiamSatAnToan" as SSU
+participant "drv:\nDriverBom" as DRV
+PB -> APP : nhập CHO = 60 g
+APP -> BLE : MealRequest(CHO) [AES-CCM, nonce n]
+BLE -> BLE : verifyMAC(); checkNonce(n)
+alt gói không hợp lệ (sai MAC / nonce cũ)
+  BLE -> APP : reject(AUTH_FAIL)
+  APP -> PB : "Lệnh không được xác thực"
+else hợp lệ
+  BLE -> CTRL : MealRequest(CHO)
+  CTRL -> CTRL : B = bolusCalc(CHO, G, IOB)
+  CTRL -> APP : BolusProposal(B = 5,50 U)
+  APP -> PB : hiển thị liều đề xuất
+  PB -> APP : xác nhận (bước 2: PIN / giữ nút)
+  APP -> CTRL : BolusConfirm(B, token)
+  CTRL -> SSU : DoseProposal(B)
+  SSU -> SSU : B ≤ Bmax; IOB + B ≤ IOBmax
+  SSU -> DRV : DoseCommand(B)
+  DRV --> SSU : DeliveryStatus(5,50 U)
+  SSU --> CTRL : ack
+  CTRL -> APP : BolusDone(5,50 U, IOB mới)
+  APP -> PB : thông báo hoàn tất
+end
+@enduml

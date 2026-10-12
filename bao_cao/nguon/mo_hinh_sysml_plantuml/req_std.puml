@@ -1,0 +1,88 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+title req [Package] YeuCauAnToanYTe [Tiêu chuẩn → yêu cầu an toàn hệ thống]
+left to right direction
+skinparam nodesep 12
+skinparam ranksep 60
+class "ISO 14971:2019" as STD01 <<requirement>> {
+  id = "STD-01"
+  text = "Quản lý rủi ro thiết bị y tế"
+}
+class "IEC 62304" as STD02 <<requirement>> {
+  id = "STD-02"
+  text = "Phần mềm lớp an toàn C"
+}
+class "IEC 60601-1-10" as STD04 <<requirement>> {
+  id = "STD-04"
+  text = "Bộ điều khiển vòng kín sinh lý"
+}
+class "IEC 60601-2-24" as STD05 <<requirement>> {
+  id = "STD-05"
+  text = "Bơm truyền dịch"
+}
+class "IEC 60601-1-8" as STD06 <<requirement>> {
+  id = "STD-06"
+  text = "Hệ thống báo động"
+}
+class "IEC 81001-5-1" as STD09 <<requirement>> {
+  id = "STD-09"
+  text = "An ninh mạng"
+}
+class "NgungBomDuBao" as RS01 <<requirement>> {
+  id = "REQ-S-01"
+  text = "Ngừng bơm khi G hoặc Ĝ30 < 70 mg/dL"
+  risk = High
+  verifyMethod = Simulation
+}
+class "GioiHanLieu" as RS02 <<requirement>> {
+  id = "REQ-S-02"
+  text = "Bolus ≤ Bmax; basal ≤ bmax"
+  risk = High
+  verifyMethod = Test
+}
+class "GioiHanIOB" as RS03 <<requirement>> {
+  id = "REQ-S-03"
+  text = "IOB + u ≤ IOBmax"
+  risk = High
+  verifyMethod = Simulation
+}
+class "CheDoDuPhong" as RS04 <<requirement>> {
+  id = "REQ-S-04"
+  text = "Mất CGM ≥ 20' → basal theo lịch + báo động"
+  risk = High
+  verifyMethod = Simulation
+}
+class "GiamSatDocLap" as RS05 <<requirement>> {
+  id = "REQ-S-05"
+  text = "Mọi lệnh liều được giám sát độc lập xác nhận"
+  risk = High
+  verifyMethod = Test
+}
+class "PhatHienTacNghen" as RS06 <<requirement>> {
+  id = "REQ-S-06"
+  text = "Phát hiện tắc nghẽn → báo động cao"
+  risk = High
+  verifyMethod = Test
+}
+class "BaoDongHaDuongHuyet" as RA01 <<requirement>> {
+  id = "REQ-A-01"
+  text = "G < 54 → báo động cao ≤ 10 s, lặp lại"
+  risk = High
+  verifyMethod = Simulation
+}
+class "XacThucLenhTuXa" as RC01 <<requirement>> {
+  id = "REQ-C-01"
+  text = "Lệnh bolus từ xa: xác thực, mã hóa, chống phát lại"
+  risk = Medium
+  verifyMethod = Test
+}
+RS01 ..> STD04 : <<deriveReqt>>
+RS02 ..> STD04 : <<deriveReqt>>
+RS03 ..> STD01 : <<deriveReqt>>
+RS04 ..> STD04 : <<deriveReqt>>
+RS05 ..> STD02 : <<deriveReqt>>
+RS06 ..> STD05 : <<deriveReqt>>
+RA01 ..> STD06 : <<deriveReqt>>
+RC01 ..> STD09 : <<deriveReqt>>
+@enduml

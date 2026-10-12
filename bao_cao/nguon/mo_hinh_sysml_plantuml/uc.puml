@@ -1,0 +1,36 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+title uc [Package] UseCaseAID [Biểu đồ ca sử dụng của hệ AID]
+actor "Người bệnh" as PB
+actor "Người chăm sóc" as NCS
+actor "Bác sĩ nội tiết" as BS
+actor "Cảm biến CGM" as CGM <<system>>
+actor "Đồng hồ hệ thống\n(sự kiện 5 phút)" as CLK <<system>>
+rectangle "Hệ thống AID" {
+  usecase "UC01. Điều khiển liều\ntự động theo CGM" as UC01
+  usecase "UC02. Kiểm tra giới hạn\nvà xác nhận an toàn" as UC02
+  usecase "UC03. Ngừng bơm dự báo\nhạ đường huyết (PLGS)" as UC03
+  usecase "UC04. Bolus bữa ăn" as UC04
+  usecase "UC05. Phát và xử lý\nbáo động" as UC05
+  usecase "UC06. Chuyển chế độ\ndự phòng" as UC06
+  usecase "UC07. Cấu hình\nthông số điều trị" as UC07
+  usecase "UC08. Theo dõi từ xa" as UC08
+  usecase "UC09. Xem báo cáo AGP/TIR" as UC09
+  usecase "UC10. Thay cảm biến,\nbộ truyền, nạp insulin" as UC10
+}
+CLK --> UC01
+CGM --> UC01
+UC01 ..> UC02 : <<include>>
+UC04 ..> UC02 : <<include>>
+UC03 ..> UC01 : <<extend>>
+UC06 ..> UC01 : <<extend>>
+UC05 <.. UC03 : <<include>>
+PB --> UC04
+PB --> UC05
+PB --> UC10
+NCS --> UC08
+NCS --> UC05
+BS --> UC07
+BS --> UC09
+@enduml

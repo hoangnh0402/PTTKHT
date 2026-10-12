@@ -1,0 +1,39 @@
+@startuml
+!include style.iuml
+title act [Activity] BolusBuaAn [Luồng bolus bữa ăn do người bệnh khởi tạo]
+|Người bệnh / App|
+start
+:<<accept event>>\nNgười bệnh mở chức năng bữa ăn;
+:Nhập lượng CHO (g);
+if (CHO trong miền 1–150 g?) then (không)
+  :Thông báo lỗi nhập liệu;
+  stop
+else (có)
+endif
+|Bộ điều khiển AID|
+:Lấy G hiện tại, xu hướng, IOB;
+:Bmeal = CHO / ICR\nBcorr = (G − GT) / ISF;
+:B = min{max[0, Bmeal + Bcorr − IOB], Bmax};
+if (G < 70 hoặc xu hướng giảm nhanh?) then (có)
+  :Giảm hoặc hoãn bolus,\nhiển thị cảnh báo;
+else (không)
+endif
+|Người bệnh / App|
+:Hiển thị liều đề xuất (U)\nvà chi tiết tính toán;
+if (Người bệnh xác nhận\n(bước 2: giữ nút / PIN)?) then (hủy)
+  :Ghi nhật ký "bolus bị hủy";
+  stop
+else (xác nhận)
+endif
+|Bộ giám sát an toàn|
+:Kiểm tra B ≤ Bmax,\nIOB + B ≤ IOBmax, TDD ≤ TDDmax;
+if (Đạt?) then (không)
+  :Từ chối lệnh, báo động;
+  stop
+else (có)
+endif
+|Cơ cấu bơm|
+:Bơm bolus theo bước 0,05 U;
+:Cập nhật IOB, COB;
+stop
+@enduml

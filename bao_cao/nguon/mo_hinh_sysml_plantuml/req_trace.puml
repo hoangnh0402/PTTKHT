@@ -1,0 +1,51 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+title req [Package] TruyXuatAnToan [Mối nguy – yêu cầu – thiết kế – kiểm chứng]
+left to right direction
+skinparam ranksep 50
+class "H1: Bơm quá liều insulin" as H1 <<hazard>>
+class "H3: Dữ liệu CGM sai/mất" as H3 <<hazard>>
+class "KhongGayHaiDoInsulin" as SN02 <<requirement>> {
+  id = "SN-02"
+}
+class "GioiHanAnToanLieu" as YC11 <<requirement>> {
+  id = "YC-11"
+  text = "basal ≤ bmax, bolus ≤ Bmax, IOB ≤ IOBmax"
+}
+class "GioiHanLieu" as RS02 <<requirement>> {
+  id = "REQ-S-02"
+}
+class "GioiHanIOB" as RS03 <<requirement>> {
+  id = "REQ-S-03"
+}
+class "NgungBomDuBao" as RS01 <<requirement>> {
+  id = "REQ-S-01"
+}
+class "CheDoDuPhong" as RS04 <<requirement>> {
+  id = "REQ-S-04"
+}
+class "BoGiamSatAnToan" as SSU <<block>>
+class "BoDieuKhienAID" as CTRL <<block>>
+class "act TinhLieuChuKy5Phut" as ACT <<activity>>
+class "TC-SIM-01: Bữa ăn khai báo thừa" as TC1 <<testCase>>
+class "TC-SIM-02: Mất tín hiệu CGM 40'" as TC2 <<testCase>>
+class "TC-FI-01: Tiêm lỗi lệnh liều" as TC3 <<testCase>>
+YC11 +-- RS02
+YC11 +-- RS03
+YC11 ..> SN02 : <<deriveReqt>>
+RS01 ..> SN02 : <<deriveReqt>>
+RS02 ..> H1 : <<trace>>
+RS03 ..> H1 : <<trace>>
+RS01 ..> H1 : <<trace>>
+RS04 ..> H3 : <<trace>>
+SSU ..> RS02 : <<satisfy>>
+SSU ..> RS03 : <<satisfy>>
+CTRL ..> RS01 : <<satisfy>>
+CTRL ..> RS04 : <<satisfy>>
+ACT ..> RS01 : <<refine>>
+TC1 ..> RS01 : <<verify>>
+TC2 ..> RS04 : <<verify>>
+TC3 ..> RS02 : <<verify>>
+TC3 ..> RS03 : <<verify>>
+@enduml

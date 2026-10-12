@@ -1,0 +1,70 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+skinparam defaultFontSize 11
+title bdd [Package] CauTrucAID [Phân rã cấu trúc Hệ thống Bơm Insulin Tự động]
+class "HeThongAID" as AID <<system>> {
+  values
+  Ts : Time = 5 min
+  cheDo : CheDoHoatDong
+}
+class "CamBienCGM" as CGM <<block>> {
+  values
+  dai : 40..400 mg/dL
+  MARD : Real = 9 %
+  tuoiTho : 10 ngay
+}
+class "BomInsulin" as PUMP <<block>> {
+  values
+  doPhanGiai : 0,05 U
+  binhChua : 200 U
+  IP : IPX7
+}
+class "UngDungDiDong" as APP <<block>>
+class "BoDieuKhienAID" as CTRL <<block>> {
+  operations
+  validate()
+  predict()
+  controlLaw()
+  bolusCalc()
+}
+class "BoGiamSatAnToan" as SSU <<block>> {
+  values
+  bmax = 3 U/h
+  Bmax = 10 U
+  IOBmax = 8 U
+  operations
+  checkLimits()
+}
+class "DriverBom" as DRV <<block>> {
+  operations
+  deliver()
+}
+class "CoCauDayPiston" as MECH <<block>> {
+  dongCoBuoc
+  trucVit
+  piston
+}
+class "CamBienApLuc" as PS <<block>>
+class "QuanLyBaoDong" as ALM <<block>>
+class "Pin" as BAT <<block>> {
+  values
+  dungLuong : mAh
+}
+class "GiaoTiepBLE" as BLE <<block>>
+class "BoPhatCGM" as TX <<block>>
+class "DienCucEnzym" as ENZ <<block>>
+AID *-- "1" CGM
+AID *-- "1" PUMP
+AID *-- "0..1" APP
+CGM *-- ENZ
+CGM *-- TX
+PUMP *-- "1" CTRL
+PUMP *-- "1" SSU
+PUMP *-- DRV
+PUMP *-- MECH
+PUMP *-- PS
+PUMP *-- ALM
+PUMP *-- BAT
+PUMP *-- BLE
+@enduml

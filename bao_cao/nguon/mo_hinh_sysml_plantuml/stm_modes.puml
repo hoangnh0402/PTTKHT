@@ -1,0 +1,30 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+title stm [State Machine] CheDoBoDieuKhien [Các chế độ hoạt động của bộ điều khiển AID]
+state "Khởi động\n(tự kiểm tra)" as KhoiDong
+state "Thủ công\n(basal theo lịch)" as ThuCong
+state "Tự động (vòng kín)" as TuDong {
+  state "Điều chỉnh basal" as DieuChinhBasal
+  state "Bolus bữa ăn" as BolusBuaAn
+  state "Tạm ngưng PLGS" as PLGS
+  [*] --> DieuChinhBasal
+  DieuChinhBasal --> BolusBuaAn : mealConfirmed
+  BolusBuaAn --> DieuChinhBasal : bolusDone
+  DieuChinhBasal --> PLGS : [y_k < 70 hoặc Ĝ < 70]
+  PLGS --> DieuChinhBasal : [y_k ≥ 80 và Ĝ ≥ 80]
+}
+state "Dự phòng\n(basal theo lịch + báo động)" as DuPhong
+state "An toàn\n(ngừng bơm, báo động CAO)" as AnToan
+[*] --> KhoiDong
+KhoiDong --> ThuCong : selfTestOK
+KhoiDong --> AnToan : selfTestFail
+ThuCong --> TuDong : batAuto [CGM hợp lệ và đủ cấu hình]
+TuDong -left-> ThuCong : tatAuto (người bệnh tắt)
+TuDong --> DuPhong : after(20 min) mất CGM
+DuPhong --> TuDong : 3 mẫu CGM hợp lệ liên tiếp
+DuPhong --> ThuCong : nguoiBenhChon
+TuDong --> AnToan : supervisorReject hoặc watchdog hoặc occlusion
+ThuCong --> AnToan : occlusion hoặc reservoirEmpty hoặc batteryDead
+AnToan --> ThuCong : faultCleared và userAck
+@enduml

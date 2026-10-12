@@ -1,0 +1,22 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+title stm [State Machine] TrangThaiDuLieuCGM [Trạng thái dữ liệu CGM tại bộ điều khiển]
+state "Khởi động cảm biến\n(warm-up)" as KhoiDongCamBien
+state "Hợp lệ" as HopLe
+state "Bất thường\n(ngoài dải / nhảy giá trị)" as BatThuong
+state "Mất tín hiệu\n(< 20 phút)" as MatTinHieu
+state "Mất kéo dài\n(≥ 20 phút)" as MatKeoDai
+state "Hết hạn\n(> 10 ngày)" as HetHan
+[*] --> KhoiDongCamBien
+KhoiDongCamBien --> HopLe : warmUpDone
+HopLe --> BatThuong : [y ngoài 40–400 hoặc |dG/dt| > 4]
+BatThuong --> HopLe : 2 mẫu hợp lệ liên tiếp
+HopLe --> MatTinHieu : không nhận gói > 10 phút
+MatTinHieu --> HopLe : nhận gói hợp lệ
+MatTinHieu --> MatKeoDai : after(20 min)
+BatThuong --> MatKeoDai : after(20 min)
+MatKeoDai --> HopLe : 3 mẫu hợp lệ liên tiếp
+HopLe --> HetHan : sensorAge > 10 ngày
+HetHan --> [*] : thayCamBien
+@enduml

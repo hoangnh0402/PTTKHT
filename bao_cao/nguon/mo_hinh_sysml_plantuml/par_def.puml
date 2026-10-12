@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+skinparam defaultFontSize 11
+title bdd [Package] RangBuocTinhLieu [Định nghĩa các khối ràng buộc (constraint blocks)]
+class "BolusCalculator" as BC <<constraint>> {
+  constraints
+  {field} {B = min(max(0, CHO/ICR + (G − GT)/ISF − IOB), Bmax)}
+  parameters
+  CHO : g ; G, GT : mg/dL
+  ICR : g/U ; ISF : mg/dL/U
+  IOB, Bmax, B : U
+}
+class "InsulinOnBoard" as IOBC <<constraint>> {
+  constraints
+  {field} {IOB(t) = Σ u_j · f_IOB(t − t_j; DIA, t_p)}
+  parameters
+  u_j : U ; DIA = 240 min ; t_p = 75 min
+}
+class "DuBaoGlucose" as PRED <<constraint>> {
+  constraints
+  {field} {Ĝ30 = G + 30·λ·dG/dt − ISF·ΔIOB30 + (ISF/ICR)·ΔCOB30}
+  parameters
+  λ = 0,7 ; dG/dt : mg/dL/min
+}
+class "GioiHanAnToan" as LIM <<constraint>> {
+  constraints
+  {field} {u* = floor(min(u, Bmax, IOBmax − IOB, rate·bmax)/0,05)·0,05}
+  {field} {u* = 0 nếu G < 70 hoặc Ĝ30 < 70}
+}
+class "NangLuongPin" as ENG <<constraint>> {
+  constraints
+  {field} {T = C·V·η / (P_idle + P_ble + E_step·n_step/Δt)}
+  parameters
+  C : mAh ; V : V ; η ; P : mW
+}
+class "DoTreBaoDong" as LAT <<constraint>> {
+  constraints
+  {field} {t_alarm − t_detect = t_queue + t_proc + t_out ≤ 10 s}
+}
+class "DongHocBergman" as BERG <<constraint>> {
+  constraints
+  {field} {dG/dt = −(SG + X)·G + SG·Gb + Ra/VG}
+  {field} {dX/dt = −p2·X + p2·SI·(I − Ib)}
+}
+@enduml

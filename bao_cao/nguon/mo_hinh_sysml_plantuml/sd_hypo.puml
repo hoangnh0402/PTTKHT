@@ -1,0 +1,27 @@
+@startuml
+!include style.iuml
+title sd [Interaction] BaoDongHaDuongHuyet [Báo động khẩn cấp và leo thang]
+participant "ctrl:\nBoDieuKhienAID" as CTRL
+participant "alm:\nQuanLyBaoDong" as ALM
+participant "hmi:\nCoiRungManHinh" as HMI
+participant "app:\nUngDungDiDong" as APP
+participant "cloud:\nNenTangDamMay" as CLOUD
+actor "Người\nchăm sóc" as NCS
+actor "Người\nbệnh" as PB
+CTRL -> ALM : raise(URGENT_LOW, y_k = 52 mg/dL)
+note right of ALM : {t_alarm − t_detect ≤ 10 s}
+ALM -> HMI : còi + rung ưu tiên CAO
+ALM ->> APP : thông báo đẩy ưu tiên CAO
+APP ->> CLOUD : sự kiện URGENT_LOW
+CLOUD ->> NCS : cảnh báo từ xa
+loop mỗi 5 phút tới khi được xác nhận và G ≥ 70
+  alt chưa được xác nhận
+    ALM -> HMI : tăng âm lượng (leo thang)
+    ALM ->> APP : nhắc lại
+  else người bệnh xác nhận
+    PB -> HMI : acknowledge()
+    HMI -> ALM : ack
+    ALM -> APP : gợi ý dùng 15 g CHO tác dụng nhanh
+  end
+end
+@enduml

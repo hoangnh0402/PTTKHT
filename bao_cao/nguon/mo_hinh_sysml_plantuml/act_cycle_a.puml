@@ -1,0 +1,33 @@
+@startuml
+!include style.iuml
+title act [Activity] TinhLieuChuKy5Phut – Phần A [Thu nhận, kiểm tra, dự báo]
+|Cảm biến CGM|
+start
+:<<accept time event>>\nMỗi Ts = 5 phút;
+:Đo glucose dịch kẽ,\ngửi gói qua BLE;
+:CGM_Reading]
+|Bộ điều khiển AID|
+:Nhận y_k, dấu thời gian,\ntrạng thái cảm biến;
+if (Dữ liệu hợp lệ?) then (không)
+  note right
+    Hợp lệ khi: tuổi dữ liệu ≤ 10 phút;
+    40 ≤ y_k ≤ 400 mg/dL;
+    |dG/dt| ≤ 4 mg/dL/phút;
+    cảm biến không warm-up/hết hạn
+  end note
+  if (Mất dữ liệu\n≥ 20 phút?) then (có)
+    :Thoát chế độ tự động,\nbasal theo lịch b(t);
+    :Báo động TRUNG BÌNH\n"Mất tín hiệu CGM";
+  else (chưa)
+    :Giữ basal hiện hành,\nkhông cấp liều\nbổ sung;
+  endif
+  stop
+else (có)
+endif
+:Lọc nhiễu,\ntính xu hướng dG/dt;
+:Cập nhật IOB_k\n(DIA = 4 h) và COB_k;
+:Dự báo Ĝ(k+6),\n30 phút tới;
+:GlucosePrediction]
+:(A) → sang Phần B;
+detach
+@enduml

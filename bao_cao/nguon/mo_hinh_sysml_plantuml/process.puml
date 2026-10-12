@@ -1,0 +1,24 @@
+@startuml
+!include style.iuml
+title Quy trình MBSE áp dụng (theo tinh thần OOSEM)
+start
+:1. Phát biểu bài toán dưới dạng CPS\n(biên hệ thống, tác nhân, mô hình vật lý);
+note right: Chương 1
+:2. Phân tích bên liên quan và mối nguy\n(SN-01…SN-08, H1…H8 theo ISO 14971);
+note right: Chương 2
+repeat
+  :3. Đặc tả yêu cầu\n(biểu đồ req, biểu đồ uc);
+  note right: Chương 2
+  :4. Mô hình hóa hành vi\n(act, sd, stm);
+  note right: Chương 3
+  :5. Mô hình hóa cấu trúc và tham số\n(bdd, ibd, par);
+  note right: Chương 4
+  :6. Truy xuất và cấp phát\n(RTM, ma trận cấp phát);
+  note right: Chương 4
+  :7. Mô phỏng và kiểm chứng\n(Python, ca kiểm thử TC);
+  note right: Chương 5
+repeat while (Có yêu cầu chưa được thỏa mãn\nhoặc phát hiện lỗi thiết kế?) is (có – làm mịn)
+->không;
+:Bộ mô hình và hồ sơ kiểm chứng;
+stop
+@enduml

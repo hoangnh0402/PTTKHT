@@ -1,0 +1,46 @@
+@startuml
+!include style.iuml
+title act [Activity] TinhLieuChuKy5Phut – Phần B [Tính liều, giám sát, chấp hành]
+|Bộ điều khiển AID|
+start
+:GlucosePrediction]
+if (y_k < 70 hoặc\nĜ(k+6) < 70?) then (có)
+  :PLGS: u_k = 0;
+  if (y_k < 54?) then (có)
+    :Báo động CAO,\ngợi ý 15 g CHO;
+  else (không)
+    :Cảnh báo\nhạ đường huyết;
+  endif
+else (không)
+  if (Có khai báo\nbữa ăn?) then (có)
+    :Bolus calculator\n(1.6), chờ xác nhận;
+  else (không)
+    :Luật điều khiển:\nbasal tạm thời,\nbolus hiệu chỉnh nhỏ;
+  endif
+  :DoseProposal]
+  :Áp giới hạn\nbmax, Bmax, IOBmax;\nlàm tròn 0,05 U;
+endif
+|Bộ giám sát an toàn|
+:Tính lại độc lập\ncác giới hạn;
+if (Xác nhận?) then (không)
+  :Hủy lệnh,\ntrạng thái an toàn,\nbáo động CAO;
+  stop
+else (có)
+endif
+:DoseCommand]
+|Cơ cấu bơm|
+fork
+  :Quay động cơ\nu_k* / 0,05 U bước;
+  :Đọc encoder\nvà áp lực;
+  if (Bơm\nthành công?) then (không)
+    :Báo động CAO:\ntắc nghẽn /\nhết thuốc;
+  else (có)
+  endif
+fork again
+  |Người bệnh / App|
+  :Ghi nhật ký,\nđồng bộ app,\nđám mây;
+end fork
+|Cơ cấu bơm|
+:DeliveryStatus]
+stop
+@enduml

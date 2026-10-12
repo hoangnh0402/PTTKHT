@@ -1,0 +1,44 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+skinparam defaultFontSize 11
+skinparam componentStyle rectangle
+title ibd [Block] HeThongAID [Kết nối tín hiệu, năng lượng và vật chất giữa các phần]
+rectangle "cgm : CamBienCGM" as cgm {
+  portin "pGlucose" as cgm_in
+  portout "pBLE_tx" as cgm_out
+}
+rectangle "pump : BomInsulin" as pump {
+  rectangle "ble : GiaoTiepBLE" as ble
+  rectangle "ctrl : BoDieuKhienAID" as ctrl
+  rectangle "ssu : BoGiamSatAnToan" as ssu
+  rectangle "drv : DriverBom" as drv
+  rectangle "mech : CoCauDayPiston" as mech
+  rectangle "ps : CamBienApLuc" as ps
+  rectangle "alm : QuanLyBaoDong" as alm
+  rectangle "bat : Pin" as bat
+  portin "pBLE_rx" as pump_in
+  portout "pInsulin" as pump_out
+  portout "pApp" as pump_app
+}
+rectangle "app : UngDungDiDong" as app
+rectangle "body : CoTheNguoiBenh" as body <<external>>
+body --> cgm_in : glucose dịch kẽ\n[mg/dL]
+cgm_out --> pump_in : CGM_Reading\n[BLE 5.x, AES-CCM]
+pump_in --> ble
+ble --> ctrl : CGM_Reading
+ctrl --> ssu : DoseProposal
+ssu --> drv : DoseCommand
+drv --> mech : xung bước\n[điện]
+mech --> pump_out : insulin\n[U, vật chất]
+pump_out --> body : cannula dưới da
+ps --> drv : áp lực [kPa]
+ps --> alm : occlusion
+ssu --> alm : fault
+ctrl --> alm : hypo/hyper
+bat --> drv : nguồn 3,7 V
+bat --> ctrl : nguồn
+bat --> ssu : nguồn (độc lập)
+ctrl --> pump_app : status
+pump_app --> app : BLE (mã hóa)
+@enduml

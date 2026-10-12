@@ -1,0 +1,58 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+skinparam defaultFontSize 11
+title bdd [Package] KieuDuLieu [Các kiểu dữ liệu của luồng đối tượng]
+class "CGM_Reading" as R <<block>> {
+  y : mg/dL
+  t : TimeStamp
+  status : SensorStatus
+  seq : Integer
+}
+class "GlucosePrediction" as P <<block>> {
+  G : mg/dL
+  dGdt : mg/dL/min
+  IOB : U
+  COB : g
+  Ghat30 : mg/dL
+}
+class "DoseProposal" as DP <<block>> {
+  basalRate : U/h
+  bolus : U
+  reason : DoseReason
+}
+class "DoseCommand" as DC <<block>> {
+  amount : U
+  steps : Integer
+  crc : Integer
+  approvedBy : SSU
+}
+class "DeliveryStatus" as DS <<block>> {
+  delivered : U
+  pressure : kPa
+  ok : Boolean
+}
+enum "SensorStatus" as SS <<enumeration>> {
+  OK
+  WARMUP
+  EXPIRED
+  ERROR
+}
+enum "CheDoHoatDong" as MODE <<enumeration>> {
+  KHOI_DONG
+  THU_CONG
+  TU_DONG
+  DU_PHONG
+  AN_TOAN
+}
+enum "MucUuTien" as PRI <<enumeration>> {
+  CAO
+  TRUNG_BINH
+  THAP
+}
+R --> P : <<transform>>
+P --> DP : <<transform>>
+DP --> DC : <<transform>>
+DC --> DS : <<transform>>
+R ..> SS
+@enduml

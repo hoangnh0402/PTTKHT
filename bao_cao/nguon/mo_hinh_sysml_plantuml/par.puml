@@ -1,0 +1,30 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+skinparam defaultFontSize 11
+title par [Block] BoDieuKhienAID [Liên kết tham số cho phép tính liều một chu kỳ]
+left to right direction
+rectangle "cgm.y_k : mg/dL" as yk
+rectangle "app.CHO : g" as cho
+rectangle "theta.ICR, ISF, GT" as theta
+rectangle "pump.lichSuLieu u_j" as hist
+rectangle "ssu.Bmax, bmax, IOBmax" as lim
+rectangle "iob : InsulinOnBoard" as IOBC <<constraint>>
+rectangle "pred : DuBaoGlucose" as PRED <<constraint>>
+rectangle "bc : BolusCalculator" as BC <<constraint>>
+rectangle "gh : GioiHanAnToan" as LIM <<constraint>>
+rectangle "drv.DoseCommand.amount : U" as out
+hist --> IOBC : u_j
+yk --> PRED : G, dG/dt
+IOBC --> PRED : IOB
+IOBC --> BC : IOB
+theta --> BC : ICR, ISF, GT
+theta --> PRED : ISF, ICR
+cho --> BC : CHO
+yk --> BC : G
+BC --> LIM : u
+PRED --> LIM : Ĝ30
+IOBC --> LIM : IOB
+lim --> LIM : giới hạn
+LIM --> out : u*
+@enduml

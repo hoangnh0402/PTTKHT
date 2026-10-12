@@ -1,0 +1,26 @@
+@startuml
+!pragma layout smetana
+!include style.iuml
+title bdd [Package] NguCanhHeThong [Ngữ cảnh và biên của hệ AID]
+actor "Người bệnh" as PB
+actor "Người chăm sóc" as NCS
+actor "Bác sĩ nội tiết" as BS
+rectangle "<<system>>\nHệ thống AID\n(biên hệ thống)" as AID {
+  rectangle "<<block>>\nCảm biến CGM" as CGM
+  rectangle "<<block>>\nBơm insulin\n(bộ điều khiển AID +\nbộ giám sát an toàn)" as PUMP
+  rectangle "<<block>>\nỨng dụng di động" as APP
+}
+rectangle "<<external>>\nNền tảng đám mây /\nCổng lâm sàng" as CLOUD
+rectangle "<<external>>\nCơ thể người bệnh\n(động học glucose–insulin)" as BODY
+rectangle "<<external>>\nMáy đo đường huyết\nmao mạch (BGM)" as BGM
+PB --> APP : khai báo CHO,\nxác nhận bolus
+APP --> PB : cảnh báo, gợi ý liều
+BODY --> CGM : glucose dịch kẽ
+PUMP --> BODY : insulin dưới da
+CGM --> PUMP : y_k (BLE, 5 phút)
+PUMP --> APP : trạng thái, báo động
+APP --> CLOUD : đồng bộ dữ liệu (TLS)
+CLOUD --> NCS : cảnh báo từ xa
+BS --> CLOUD : cấu hình basal, ICR, ISF
+BGM --> APP : hiệu chuẩn / đối chứng
+@enduml

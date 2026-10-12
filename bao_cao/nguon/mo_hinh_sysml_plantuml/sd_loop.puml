@@ -1,0 +1,40 @@
+@startuml
+!include style.iuml
+title sd [Interaction] ChuKyVongKin [Tương tác trong một chu kỳ điều khiển 5 phút]
+participant "cgm:\nCamBienCGM" as CGM
+participant "ctrl:\nBoDieuKhienAID" as CTRL
+participant "ssu:\nBoGiamSatAnToan" as SSU
+participant "drv:\nDriverBom" as DRV
+participant "alm:\nQuanLyBaoDong" as ALM
+participant "app:\nUngDungDiDong" as APP
+== t = k·Ts ==
+CGM -> CTRL : CGM_Reading(y_k, t_k, status) [BLE]
+activate CTRL
+CTRL -> CTRL : validate(); filter(); updateIOB()
+CTRL -> CTRL : Ĝ(k+6) = predict()
+alt Ĝ(k+6) < 70 hoặc y_k < 70
+  CTRL -> SSU : DoseProposal(u_k = 0, SUSPEND)
+  CTRL -> ALM : raise(LOW_GLUCOSE)
+else bình thường
+  CTRL -> CTRL : u_k = controlLaw(); applyLimits()
+  CTRL -> SSU : DoseProposal(u_k)
+end
+activate SSU
+SSU -> SSU : checkLimits(u_k, IOB_k, TDD)
+alt xác nhận
+  SSU -> DRV : DoseCommand(u_k*)
+  activate DRV
+  DRV -> DRV : quay động cơ; đọc encoder, áp lực
+  DRV --> SSU : DeliveryStatus(ok, delivered)
+  deactivate DRV
+else từ chối
+  SSU -> ALM : raise(CONTROL_FAULT, HIGH)
+  SSU -> CTRL : enterSafeState()
+end
+SSU --> CTRL : ack(delivered)
+deactivate SSU
+par không chặn vòng điều khiển
+  CTRL ->> APP : status(y_k, Ĝ, u_k*, IOB)
+end
+deactivate CTRL
+@enduml
